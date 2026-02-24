@@ -18,27 +18,59 @@ error_reporting(E_ALL);
         <p>Logga in eller registrera dig här!</p>
     </article>
     
-    <!-- REGISTER FORM -->
-     <article>
-        <h2>Register</h2>
-        <form method="post">
-            <input type="hidden" name="form" value="register">
-            Username: <input type="text" name="username" required><br>
-            Email: <input type="email" name="email" required><br>
-            <input type="submit" value="Register">
-        </form>
-    </article>
-    <?php include "./login.php" ?>
-    <!-- LOGIN FORM -->
-     <article>
-        <h2>Login</h2>
-        <form method="post">
-            <input type="hidden" name="form" value="login">
-            Username: <input type="text" name="username" required><br>
-            Password: <input type="password" name="password" required><br>
-            <input type="submit" value="Login">
-        </form>
-    </article>
+    <h2>Register</h2>
+    <form method="post" action="login.php">
+    <input type="hidden" name="form" value="register">
+
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Riktigt namn:</label><br>
+    <input type="text" name="real_name" required><br><br>
+
+    <label>Lösenord:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <label>Email:</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label>Stad:</label><br>
+    <input type="text" name="city" required><br><br>
+
+    <label>Annonstext (“Berätta om dig”):</label><br>
+    <textarea name="ad_text" required></textarea><br><br>
+
+    <label>Årslön:</label><br>
+    <input type="number" name="salary" required><br><br>
+
+    <label>Preferens:</label><br>
+    <select name="preference" required>
+        <option value="Man">Man</option>
+        <option value="Kvinna">Kvinna</option>
+        <option value="Båda">Båda</option>
+        <option value="Annat">Annat</option>
+        <option value="Alla">Alla</option>
+    </select><br><br>
+
+    <input type="submit" value="Register">
+    </form>
+
+
+    <hr>
+
+
+    <h2>Login</h2>
+    <form method="post" action="login.php">
+    <input type="hidden" name="form" value="login">
+
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <input type="submit" value="Login">
+    </form>
 
 
     </article>
