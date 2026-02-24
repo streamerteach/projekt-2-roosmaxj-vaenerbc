@@ -93,3 +93,66 @@
             //Print_R sriver ut innehållet av en array
         // print_r($a);
     }
+
+
+$user_id = $_SESSION['user_id'];
+
+$sql = "SELECT * FROM users WHERE id = :id LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->execute([':id' => $user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// UPDATE PROFILE
+if (!empty($_POST['form']) && $_POST['form'] === "update") {
+
+    $sql = "UPDATE users SET 
+            real_name = :real_name,
+            email = :email,
+            city = :city,
+            ad_text = :ad_text,
+            salary = :salary,
+            preference = :preference
+            WHERE id = :id";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->execute([
+        ':real_name'  => $_POST['real_name'],
+        ':email'      => $_POST['email'],
+        ':city'       => $_POST['city'],
+        ':ad_text'    => $_POST['ad_text'],
+        ':salary'     => $_POST['salary'],
+        ':preference' => $_POST['preference'],
+        ':id'         => $_SESSION['user_id']
+    ]);
+
+    echo "<p style='color:green;'>Profile updated!</p>";
+}
+
+// DELETE PROFILE
+if (!empty($_POST['form']) && $_POST['form'] === "delete") {
+
+    // Fetch user
+    $sql = "SELECT password FROM users WHERE id = :id";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([':id' => $_SESSION['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Verify password
+    if ($user && password_verify($_POST['password'], $user['password'])) {
+
+        // Delete user
+        $sql = "DELETE FROM users WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([':id' => $_SESSION['user_id']]);
+
+        // Destroy session
+        session_destroy();
+
+        header("Location: ../index.php?deleted=1");
+        exit;
+
+    } else {
+        echo "<p style='color:red;'>Wrong password. Profile NOT deleted.</p>";
+    }
+}

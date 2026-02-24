@@ -1,11 +1,3 @@
-<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-?>
-<?php require_once '/home/v/vaenerbc/html/projekt-1-roosmaxj-vaenerbc/methods.php'; ?>
-
-
 <?php include "../methods.php"?>
 <?php include "../header.php" ?>
 
@@ -54,7 +46,6 @@ error_reporting(E_ALL);
 
     <input type="submit" value="Register">
     </form>
-
 
     <hr>
 

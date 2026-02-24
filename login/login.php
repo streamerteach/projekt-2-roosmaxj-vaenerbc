@@ -35,12 +35,18 @@ if (!empty($_POST['form']) && $_POST['form'] === "register") {
 
     if ($success) {
         echo "Registration successful!";
+        header("Location: index.php");
+        ?>
+        <div class="success-box">
+        <h3>Account created!</h3>
+        <p>You can now log in below.</p>
+        </div>
+        <?php
+        exit;
     } else {
         echo "Error: Could not register user.";
     }
 }
-
-
 
 // -------------------------
 // LOGIN
