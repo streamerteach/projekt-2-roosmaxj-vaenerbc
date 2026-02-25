@@ -19,73 +19,67 @@
 
 
     <?php
-        //Granskar om bilden är riktig eller en fake 
-            if (isset($_POST["submit"])) {
+       
 
-                //Profil bilds upplägg
 
-                $target_dir    = "./pictures/";
-                $target_file   = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-                $uploadOk      = 1;
-                $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        if (isset($_POST["submit"])) {
 
-                $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-                if ($check !== false) {
-                    echo "File is an image - " . $check["mime"] . ".";
-                    $uploadOk = 1;
-                } else {
-                    echo "File is not an image.";
-                    $uploadOk = 0;
-                }
+            $user_id = $_SESSION['user_id'];
+            $target_dir = "./pictures/";
+            $imageFileType = strtolower(pathinfo($_FILES["fileToUpload"]["name"], PATHINFO_EXTENSION));
 
-                // Granskar om likadan fil finns ren!
-                if (file_exists($target_file)) {
-                    echo "Sorry, file already exists.";
-                    $uploadOk = 0;
-                }
+            // Create unique filename
+            $new_filename = "user_" . $user_id . "_" . time() . "." . $imageFileType;
+            $target_file = $target_dir . $new_filename;
 
-                // Granskar filstorlek! 
-                if ($_FILES["fileToUpload"]["size"] > 500000) {
-                    echo "Sorry, your file is too large.";
-                    $uploadOk = 0;
-                }
+            $uploadOk = 1;
 
-                // Låter bara använda vissa filer!
-                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-                    && $imageFileType != "gif") {
-                    echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-                    $uploadOk = 0;
-                }
-
-                // Granskar om $uploadOk är satt 0 av en error!
-                if ($uploadOk == 0) {
-                    echo "Sorry, your file was not uploaded.";
-                    // om allt är ok lägger den upp bilden! 
-                } else {
-                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                        echo "The file " . htmlspecialchars(basename($_FILES["fileToUpload"]["name"])) . " has been uploaded.";
-                    } else {
-                        echo "Sorry, there was an error uploading your file.";
-                    }
-                }
+            // Validate image
+            $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+            if ($check === false) {
+                echo "File is not an image.";
+                $uploadOk = 0;
             }
 
-            // Skriver ut vilka file som har laddats up
-            $dir = "./pictures/";
-            $a   = scandir($dir);
-
-            // Hitta första riktiga filen (hoppa över . och ..)
-            foreach ($a as $file) {
-                if ($file !== "." && $file !== "..") {
-                    $profilePic = $file;
-                    break;
-                }
+            if ($_FILES["fileToUpload"]["size"] > 500000) {
+                echo "File too large.";
+                $uploadOk = 0;
             }
+
+            if (!in_array($imageFileType, ["jpg", "jpeg", "png", "gif"])) {
+                echo "Invalid file type.";
+                $uploadOk = 0;
+            }
+
+            if ($uploadOk == 1) {
+
+                if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+
+                    // Save filename in DB
+                    $sql = "UPDATE users SET profile_pic = :pic WHERE id = :id";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->execute([
+                    ':pic' => $new_filename,
+                    ':id'  => $user_id
+                ]);
+
+                // 🔥 Reload updated user data
+                $sql = "SELECT * FROM users WHERE id = :id LIMIT 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([':id' => $user_id]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                echo "Profile picture updated!";
+            } else {
+                echo "Error uploading file.";
+            }
+        }
+    }
 
             // Visa profilbilden
-            if (isset($profilePic)) {
-                echo '<h3>Your Profile pic:</h3>';
-                echo '<img src="./pictures/' . $profilePic . '" alt="Profile picture" width="200">';
+            if (!empty($user['profile_pic'])) {
+                echo '<h3>Your Profile Picture:</h3>';
+                echo '<img src="./pictures/' . $user['profile_pic'] . '" width="200">';
             } else {
                 echo "No profile picture yet.";
             }
@@ -95,64 +89,64 @@
     }
 
 
-$user_id = $_SESSION['user_id'];
+        $user_id = $_SESSION['user_id'];
 
-$sql = "SELECT * FROM users WHERE id = :id LIMIT 1";
-$stmt = $conn->prepare($sql);
-$stmt->execute([':id' => $user_id]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-// UPDATE PROFILE
-if (!empty($_POST['form']) && $_POST['form'] === "update") {
-
-    $sql = "UPDATE users SET 
-            real_name = :real_name,
-            email = :email,
-            city = :city,
-            ad_text = :ad_text,
-            salary = :salary,
-            preference = :preference
-            WHERE id = :id";
-
-    $stmt = $conn->prepare($sql);
-
-    $stmt->execute([
-        ':real_name'  => $_POST['real_name'],
-        ':email'      => $_POST['email'],
-        ':city'       => $_POST['city'],
-        ':ad_text'    => $_POST['ad_text'],
-        ':salary'     => $_POST['salary'],
-        ':preference' => $_POST['preference'],
-        ':id'         => $_SESSION['user_id']
-    ]);
-
-    echo "<p style='color:green;'>Profile updated!</p>";
-}
-
-// DELETE PROFILE
-if (!empty($_POST['form']) && $_POST['form'] === "delete") {
-
-    // Fetch user
-    $sql = "SELECT password FROM users WHERE id = :id";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([':id' => $_SESSION['user_id']]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Verify password
-    if ($user && password_verify($_POST['password'], $user['password'])) {
-
-        // Delete user
-        $sql = "DELETE FROM users WHERE id = :id";
+        $sql = "SELECT * FROM users WHERE id = :id LIMIT 1";
         $stmt = $conn->prepare($sql);
-        $stmt->execute([':id' => $_SESSION['user_id']]);
+        $stmt->execute([':id' => $user_id]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Destroy session
-        session_destroy();
+        // UPDATE PROFILE
+        if (!empty($_POST['form']) && $_POST['form'] === "update") {
 
-        header("Location: ../index.php?deleted=1");
-        exit;
+            $sql = "UPDATE users SET 
+                real_name = :real_name,
+                email = :email,
+                city = :city,
+                ad_text = :ad_text,
+                salary = :salary,
+                preference = :preference
+                WHERE id = :id";
 
-    } else {
-        echo "<p style='color:red;'>Wrong password. Profile NOT deleted.</p>";
-    }
-}
+            $stmt = $conn->prepare($sql);
+
+            $stmt->execute([
+                ':real_name'  => $_POST['real_name'],
+                ':email'      => $_POST['email'],
+                ':city'       => $_POST['city'],
+                ':ad_text'    => $_POST['ad_text'],
+                ':salary'     => $_POST['salary'],
+                ':preference' => $_POST['preference'],
+                ':id'         => $_SESSION['user_id']
+            ]);
+
+            echo "<p style='color:green;'>Profile updated!</p>";
+        }
+
+        // DELETE PROFILE
+        if (!empty($_POST['form']) && $_POST['form'] === "delete") {
+
+         // Fetch user
+            $sql = "SELECT password FROM users WHERE id = :id";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([':id' => $_SESSION['user_id']]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Verify password
+            if ($user && password_verify($_POST['password'], $user['password'])) {
+
+                // Delete user
+                $sql = "DELETE FROM users WHERE id = :id";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([':id' => $_SESSION['user_id']]);
+
+                // Destroy session
+                session_destroy();
+
+                header("Location: ../index.php?deleted=1");
+                exit;
+
+            } else {
+                echo "<p style='color:red;'>Wrong password. Profile NOT deleted.</p>";
+            }
+        }

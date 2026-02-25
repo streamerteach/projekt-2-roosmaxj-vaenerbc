@@ -293,6 +293,28 @@ article {
     opacity: 0.7;
 }
 
+/*Ads*/
+.card {
+    width: 320px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+.like, .dislike {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.like { background: #4CAF50; color: #fff; }
+.dislike { background: #f44336; color: #fff; }
+
+
 /* FOOTER */
 footer {
     text-align: center;

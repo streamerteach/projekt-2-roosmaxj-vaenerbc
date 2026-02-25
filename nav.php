@@ -3,6 +3,8 @@
     <nav>
         <ul>
             <li><a href="/~roosmaxj/projekt-2-roosmaxj-vaenerbc/home">Home</a></li>
+            
+            <li><a href="/~roosmaxj/projekt-2-roosmaxj-vaenerbc/ads">Builds</a></li>
 
             <?php 
                 if (!empty($_SESSION["username"])) {
