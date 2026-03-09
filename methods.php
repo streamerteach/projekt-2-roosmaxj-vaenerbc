@@ -24,9 +24,9 @@ include "db.php";
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "connected to database";
+    //echo "connected to database";
 } catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+    //echo "Connection failed: " . $e->getMessage();
 }
 
 ?>
