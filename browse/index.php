@@ -37,6 +37,7 @@ switch($sort) {
 }
 
 // Visa profiler baserat på likes och dislikes
+// Lägg till comment_count i din SELECT
 $sql = "SELECT 
             u.id, 
             u.real_name, 
@@ -45,7 +46,8 @@ $sql = "SELECT
             u.profile_pic,
             COUNT(CASE WHEN v.vote = 'like' THEN 1 END) as likes_count,
             COUNT(CASE WHEN v.vote = 'dislike' THEN 1 END) as dislikes_count,
-            MAX(CASE WHEN v.user_id = :user_id THEN v.vote END) as user_vote
+            MAX(CASE WHEN v.user_id = :user_id THEN v.vote END) as user_vote,
+            (SELECT COUNT(*) FROM comments c WHERE c.target_id = u.id) as comment_count
         FROM users u
         LEFT JOIN votes v ON u.id = v.target_id
         WHERE u.id != :user_id
@@ -67,9 +69,8 @@ $check_stmt->execute([':user_id' => $user_id]);
 $total_profiles = $check_stmt->fetch(PDO::FETCH_ASSOC)['total'];
 $has_more = ($offset + $limit) < $total_profiles;
 
-// ajax request, om int
+// Om detta är en AJAX-förfrågan, skicka bara profilerna
 if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
-    // Om inga profiler finns, skicka ingen data
     if (empty($profiles)) {
         exit;
     }
@@ -93,7 +94,12 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
                 <span class="likes-count">❤️ <?php echo $profile['likes_count'] ?? 0; ?> gilla</span>
                 <span class="dislikes-count">💔 <?php echo $profile['dislikes_count'] ?? 0; ?> ogilla</span>
             </div>
-
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="../profile/?id=<?php echo $profile['id']; ?>" 
+                   style="display: inline-block; padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                    💬 Kommentera (<?php echo $profile['comment_count'] ?? 0; ?>)
+                </a>
+            </div>
         </div>
         <?php
     }
@@ -141,6 +147,14 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
                 <div class="vote-stats">
                     <span class="likes-count">❤️ <?php echo $profile['likes_count'] ?? 0; ?> gillningar</span>
                     <span class="dislikes-count">💔 <?php echo $profile['dislikes_count'] ?? 0; ?> ogillningar</span>
+                </div>
+                
+                <!-- Lägg till detta efter vote-stats eller i slutet av varje profil-kort -->
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="../users/?id=<?php echo $profile['id']; ?>" 
+                    style="display: inline-block; padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-size: 14px;">
+                        💬 Kommentera (<?php echo $profile['comment_count'] ?? 0; ?>)
+                    </a>
                 </div>
                 
             </div>
