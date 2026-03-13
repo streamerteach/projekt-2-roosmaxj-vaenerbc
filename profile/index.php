@@ -1,6 +1,7 @@
 <?php include "../methods.php"?>
 <?php include "../header.php" ?>
 <?php
+
 if (empty($_SESSION['user_id'])) {
     header("Location: ../login/");
     exit;
@@ -113,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form'])) {
         <p><strong>Preferens:</strong> <?php echo htmlspecialchars($user['preference']); ?></p>
         <p><?php echo nl2br(htmlspecialchars($user['ad_text'])); ?></p>
     </div>
+    
     <?php
         // Hantera kommentar - lägg detta efter att du hämtat user
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_comment'])) {
@@ -186,30 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['form'])) {
                 <div class="comment-text">
                     <?php echo nl2br(htmlspecialchars($comment['comment'])); ?>
                 </div>
-                
-                <!-- Svara-knapp (visas för alla utom om du själv skrev kommentaren) -->
-                <?php if (!$is_own_comment): ?>
-                    <div class="comment-actions">
-                        <button class="btn btn-small" onclick="showReplyForm(<?php echo $comment['id']; ?>, '<?php echo htmlspecialchars($comment['commenter_name']); ?>')">
-                            Svara
-                        </button>
-                    </div>
-                    
-                    <!-- Dolt svarsformulär för denna kommentar -->
-                    <div id="reply-form-<?php echo $comment['id']; ?>" class="reply-form">
-                        <div class="reply-indicator">
-                            Svarar till <?php echo htmlspecialchars($comment['commenter_name']); ?>
-                        </div>
-                        <form method="POST" action="">
-                            <input type="hidden" name="target_id" value="<?php echo $user_id; ?>">
-                            <textarea name="comment" rows="3" placeholder="Skriv ditt svar..." required></textarea>
-                            <div>
-                                <button type="submit" class="btn btn-small">Skicka svar</button>
-                                <button type="button" class="btn btn-small" onclick="hideReplyForm(<?php echo $comment['id']; ?>)">Avbryt</button>
-                            </div>
-                        </form>
-                    </div>
-                <?php endif; ?>
+
             </div>
         <?php endforeach; ?>
     </div>
