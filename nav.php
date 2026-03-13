@@ -7,7 +7,6 @@
             <li><a href="/~vaenerbc/projekt-2-roosmaxj-vaenerbc/ads">Builds</a></li>
 
             <li><a href="/~vaenerbc/projekt-2-roosmaxj-vaenerbc/browse">Browse</a></li>
-            
 
             <?php 
                 if (!empty($_SESSION["username"])) {

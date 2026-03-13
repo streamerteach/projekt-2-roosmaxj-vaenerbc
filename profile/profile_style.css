@@ -1,7 +1,7 @@
 .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 16px;
 }
 
 .profile-card {
@@ -257,4 +257,17 @@ hr {
 
 .nav-links a:hover {
     text-decoration: underline;
+}
+
+.admin-link {
+        list-style: none;
+    padding: 8px 14px;
+    background-color: #1A1A1A;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 10px;
 }
