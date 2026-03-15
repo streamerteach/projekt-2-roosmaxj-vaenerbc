@@ -139,6 +139,8 @@
             exit;
         }
     ?>
+
+    <?php include "../profile.php"; ?>
     <!-- Kommentarsformulär -->
     <div class="comment-form">
         <form method="POST" action="">

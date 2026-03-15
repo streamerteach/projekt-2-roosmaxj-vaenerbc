@@ -10,7 +10,7 @@ if (empty($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Hämta en slumpmässig profil som inte är du själv
+// Hämtar en slumpmässig profil som inte är du själv
 $sql = "SELECT id, real_name, salary, ad_text, profile_pic
         FROM users
         WHERE id != :id
@@ -21,11 +21,14 @@ $stmt = $conn->prepare($sql);
 $stmt->execute([':id' => $user_id]);
 $profile = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
+
+
 <!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
     <title>Bläddra profiler</title>
+    
     <style>
         .card {
             width: 320px;
@@ -51,11 +54,14 @@ $profile = $stmt->fetch(PDO::FETCH_ASSOC);
         .like { background: #4CAF50; color: #fff; }
         .dislike { background: #f44336; color: #fff; }
     </style>
+
 </head>
 <body>
 
 <div id="conatiner"> <!-- max bredd 800px -->
+
 <?php include "../nav.php" ?>
+
 <h1>Välkommen, <?php echo htmlspecialchars($_SESSION['username']); ?></h1>
 
 <?php if ($profile): ?>
@@ -81,9 +87,11 @@ $profile = $stmt->fetch(PDO::FETCH_ASSOC);
         </form>
 
     </div>
+
 <?php else: ?>
     <p>Inga fler profiler att visa just nu.</p>
 <?php endif; ?>
+
 </div>
 </body>
 </html>
